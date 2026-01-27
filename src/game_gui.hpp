@@ -39,11 +39,12 @@ public:
     Text winnerText;              // shown in lower hud
     RectangleShape restartButton; // Shown in upper hud
 
-    Game_Gui(Game &g, RenderWindow &w) : game(g), window(w), backgroundColor(Color::Black), offset({0, 0}), miniBoardText(9, vector<Text>(9,xo_font)), bigBoardText(9, xo_font), playerTurnText(txt_font), restartText(txt_font), winnerText(txt_font), hud_width(100)
+    Game_Gui(Game &g, RenderWindow &w) : game(g), window(w), backgroundColor(Color::Black), offset({0, 0}), miniBoardText(9, vector<Text>(9, xo_font)), bigBoardText(9, xo_font), playerTurnText(txt_font), restartText(txt_font), winnerText(txt_font), hud_width(100)
     {
     }
 
     void Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hudWdth);
+    void UpdateResized(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hudWdth);
     void HoverHandle(const Event::MouseMoved *moved);
     void ClickHandle(const Event::MouseButtonReleased *clicked);
     void UpdateGuiOnClick(int i, int j, int &prevPlayableIndex);
@@ -112,10 +113,10 @@ void Game_Gui::Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hud
         bigBoardContainerM[i].setOutlineColor(backgroundColor);
         bigBoardContainerM[i].setPosition(off1 + Vector2f((i % 3) * (l1), (i / 3) * (l1)));
 
-        Vector2f txtOff{(l1) / 2.f - big_font_size * 0.22f, (l1 ) / 2.f - big_font_size * 0.8f};
+        Vector2f txtOff{(l1) / 2.f - big_font_size * 0.22f, (l1) / 2.f - big_font_size * 0.8f};
         bigBoardText[i].setCharacterSize(big_font_size);
         bigBoardText[i].setPosition(off1 + Vector2f((i % 3) * (l1), (i / 3) * (l1)) + txtOff);
-        bigBoardText[i].setFillColor(Color(180, 180, 180, 190));
+        bigBoardText[i].setFillColor(Color(200, 200, 200, 200));
         bigBoardText[i].setStyle(Text::Bold);
     }
 
@@ -135,7 +136,7 @@ void Game_Gui::Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hud
         vector<RectangleShape> &mbc = miniBoardContainer[i];
         vector<Text> &mbt = miniBoardText[i];
 
-        int font_size = (1.7f * l2);
+        int font_size = (1.4f * l2);
         for (int j = 0; j < 9; j++)
         {
             // Smallest Box
@@ -147,7 +148,7 @@ void Game_Gui::Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hud
             mbc[j].setPosition(off2 + Vector2f((j % 3) * (l2), (j / 3) * (l2)));
 
             // Text Inside Box
-            Vector2f txtOff{(l2) / 2.f - font_size * 0.22f, (l2 ) / 2.f - font_size * 0.8f};
+            Vector2f txtOff{(l2) / 2.f - font_size * 0.22f, (l2) / 2.f - font_size * 0.8f};
             mbt[j].setCharacterSize(font_size);
             mbt[j].setPosition(off2 + Vector2f((j % 3) * (l2), (j / 3) * (l2)) + txtOff);
             mbt[i].setStyle(Text::Bold);
@@ -192,6 +193,101 @@ void Game_Gui::Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hud
     winnerText.setCharacterSize(hud_font_size);
     string wnrTxt = "Winner : " + string(game.winner == 1 ? "X" : "O");
     winnerText.setString(wnrTxt);
+    textRect = winnerText.getLocalBounds();
+    winnerText.setOrigin({textRect.position.x + textRect.size.x / 2.0f,
+                          textRect.position.y + textRect.size.y / 2.0f});
+    winnerText.setPosition({off0.x + mainContainerSize * 0.5f, off0.y + mainContainerSize + hud_width / 2.f});
+}
+
+void Game_Gui::UpdateResized(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hudWdth)
+{
+    mainContainerSize = mcs;
+    margin = mrgns;
+    thickness = thkns;
+    hud_width = hudWdth;
+
+    float l0 = mcs;
+    float m0 = margin;
+    float t0 = thickness;
+
+    Vector2f off0{(windowSize.x - l0) / 2.f, (windowSize.y - l0) / 2.f};
+    offset = off0;
+
+    // Outer Bound (for Outline)
+    outerContainerO.setPosition(off0);
+    outerContainerM.setPosition(off0);
+
+    float m1 = 3.5f * m0;
+    float l1 = l0 / 3.f;
+    float t1 = thickness;
+    Vector2f off1 = off0;
+
+    // Big Board (for outline)
+    for (int i = 0; i < 9; i++)
+    {
+        bigBoardContainerO[i].setSize({l1, l1});
+        bigBoardContainerO[i].setPosition(off1 + Vector2f((i % 3) * (l1), (i / 3) * (l1)));
+    }
+    // Big Board (for margin)
+    int big_font_size = 1.8f * l1;
+    for (int i = 0; i < 9; i++)
+    {
+        bigBoardContainerM[i].setSize({l1, l1});
+        bigBoardContainerM[i].setPosition(off1 + Vector2f((i % 3) * (l1), (i / 3) * (l1)));
+
+        Vector2f txtOff{(l1) / 2.f - big_font_size * 0.22f, (l1) / 2.f - big_font_size * 0.8f};
+        bigBoardText[i].setPosition(off1 + Vector2f((i % 3) * (l1), (i / 3) * (l1)) + txtOff);
+    }
+
+    float m2 = 1.f;
+    float l2 = (l1 - 2.f * m1 + 2 * m2) / 3.f;
+
+    // Mini Boards
+    for (int i = 0; i < 9; i++)
+    {
+        Vector2f off2 = off1 + Vector2f((i % 3) * (l1), (i / 3) * (l1)) + Vector2f(m1 - m2, m1 - m2);
+        vector<RectangleShape> &mbc = miniBoardContainer[i];
+        vector<Text> &mbt = miniBoardText[i];
+
+        int font_size = (1.4f * l2);
+        for (int j = 0; j < 9; j++)
+        {
+            // Smallest Box
+            mbc[j].setSize({l2, l2});
+            mbc[j].setPosition(off2 + Vector2f((j % 3) * (l2), (j / 3) * (l2)));
+
+            // Text Inside Box
+            Vector2f txtOff{(l2) / 2.f - font_size * 0.22f, (l2) / 2.f - font_size * 0.8f};
+            mbt[j].setPosition(off2 + Vector2f((j % 3) * (l2), (j / 3) * (l2)) + txtOff);
+        }
+    }
+
+    // HUD
+    // Upper hud
+    int hud_font_size = 36;
+    upperHudContainer.setSize({l0, (float)hud_width});
+    upperHudContainer.setPosition({off0.x, off0.y - hud_width});
+
+    // Player turn text
+    FloatRect textRect = playerTurnText.getLocalBounds();
+    playerTurnText.setOrigin({textRect.position.x + textRect.size.x / 2.0f,
+                              textRect.position.y + textRect.size.y / 2.0f});
+    playerTurnText.setPosition({off0.x + mainContainerSize * 0.80f, off0.y / 2.f});
+
+    // restart button with text
+    textRect = restartText.getLocalBounds();
+    restartText.setOrigin({textRect.position.x + textRect.size.x / 2.0f,
+                           textRect.position.y + textRect.size.y / 2.0f});
+    restartText.setPosition({off0.x + mainContainerSize * 0.20f, off0.y / 2.f});
+    restartButton.setOrigin(restartText.getOrigin());
+    restartButton.setSize(restartText.getLocalBounds().size + Vector2f(hud_font_size / 2.f, hud_font_size / 2.f));
+    restartButton.setPosition(restartText.getPosition() - Vector2f(hud_font_size / 4.f, 0.f));
+
+    // Lower HUD
+    lowerHudContainer.setSize({l0, (float)hud_width});
+    upperHudContainer.setPosition({off0.x, off0.y + mainContainerSize + hud_width});
+
+    // winner text
     textRect = winnerText.getLocalBounds();
     winnerText.setOrigin({textRect.position.x + textRect.size.x / 2.0f,
                           textRect.position.y + textRect.size.y / 2.0f});

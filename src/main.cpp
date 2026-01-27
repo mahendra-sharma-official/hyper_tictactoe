@@ -3,7 +3,7 @@
 int main()
 {
     // create the window
-    sf::RenderWindow window(sf::VideoMode({1200, 1000}), "Hyper TicTacToe");
+    sf::RenderWindow window(sf::VideoMode({1200, 1200}), "Hyper TicTacToe");
     window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
 
@@ -16,7 +16,7 @@ int main()
     Vector2f wndSize = {(float)window.getSize().x, (float)window.getSize().y};
     float smallerWindow = wndSize.y < wndSize.x ? wndSize.y : wndSize.x;
     int hud_width = 100;
-    int mcs = 800;
+    int mcs = 900;
     int margins = 10;
     int thickness = 2;
 
@@ -38,7 +38,7 @@ int main()
                 window.setView(sf::View(resized / 2.f, resized));
 
                 wndSize = {(float)window.getSize().x, (float)window.getSize().y};
-                gui.Init(wndSize, mcs, margins, thickness, hud_width);
+                gui.UpdateResized(wndSize, mcs, margins, thickness, hud_width);
             }
             if (event->is<Event::MouseMoved>())
             {
