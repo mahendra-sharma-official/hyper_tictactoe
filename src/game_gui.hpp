@@ -5,7 +5,8 @@
 
 using namespace sf;
 
-Font font("res/minasans-font/font.otf");
+Font txt_font("res/minasans-font/font.otf");  // for noraml texts
+Font xo_font("res/cshovan-font/cshovan.otf"); // for X and O
 
 class Game_Gui
 {
@@ -27,6 +28,7 @@ public:
     vector<RectangleShape> bigBoardContainerM;
     vector<vector<RectangleShape>> miniBoardContainer;
     vector<vector<Text>> miniBoardText;
+    vector<Text> bigBoardText;
 
     // HUD Related
     int hud_width;
@@ -37,13 +39,14 @@ public:
     Text winnerText;              // shown in lower hud
     RectangleShape restartButton; // Shown in upper hud
 
-    Game_Gui(Game &g, RenderWindow &w) : game(g), window(w), backgroundColor(Color::Black), offset({0, 0}), miniBoardText(9, vector<Text>(9, font)), playerTurnText(font), restartText(font), winnerText(font), hud_width(100)
+    Game_Gui(Game &g, RenderWindow &w) : game(g), window(w), backgroundColor(Color::Black), offset({0, 0}), miniBoardText(9, vector<Text>(9,xo_font)), bigBoardText(9, xo_font), playerTurnText(txt_font), restartText(txt_font), winnerText(txt_font), hud_width(100)
     {
     }
 
     void Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hudWdth);
     void HoverHandle(const Event::MouseMoved *moved);
     void ClickHandle(const Event::MouseButtonReleased *clicked);
+    void UpdateGuiOnClick(int i, int j, int &prevPlayableIndex);
     void Restart();
 };
 
@@ -99,6 +102,7 @@ void Game_Gui::Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hud
     // Big Board (for margin)
     bigBoardContainerM.clear();
     bigBoardContainerM.reserve(9);
+    int big_font_size = 1.8f * l1;
     for (int i = 0; i < 9; i++)
     {
         bigBoardContainerM.emplace_back();
@@ -106,8 +110,13 @@ void Game_Gui::Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hud
         bigBoardContainerM[i].setFillColor(Color::Transparent);
         bigBoardContainerM[i].setOutlineThickness(-m1);
         bigBoardContainerM[i].setOutlineColor(backgroundColor);
-
         bigBoardContainerM[i].setPosition(off1 + Vector2f((i % 3) * (l1), (i / 3) * (l1)));
+
+        Vector2f txtOff{(l1) / 2.f - big_font_size * 0.22f, (l1 ) / 2.f - big_font_size * 0.8f};
+        bigBoardText[i].setCharacterSize(big_font_size);
+        bigBoardText[i].setPosition(off1 + Vector2f((i % 3) * (l1), (i / 3) * (l1)) + txtOff);
+        bigBoardText[i].setFillColor(Color(180, 180, 180, 190));
+        bigBoardText[i].setStyle(Text::Bold);
     }
 
     float m2 = 1.f;
@@ -126,7 +135,7 @@ void Game_Gui::Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hud
         vector<RectangleShape> &mbc = miniBoardContainer[i];
         vector<Text> &mbt = miniBoardText[i];
 
-        int font_size = (0.8f * l2);
+        int font_size = (1.7f * l2);
         for (int j = 0; j < 9; j++)
         {
             // Smallest Box
@@ -138,9 +147,10 @@ void Game_Gui::Init(Vector2f &windowSize, int mcs, int mrgns, int thkns, int hud
             mbc[j].setPosition(off2 + Vector2f((j % 3) * (l2), (j / 3) * (l2)));
 
             // Text Inside Box
-            Vector2f txtOff{(l2 - font_size) / 2.f, (l2 - font_size - font_size / 4.f) / 2.f};
+            Vector2f txtOff{(l2) / 2.f - font_size * 0.22f, (l2 ) / 2.f - font_size * 0.8f};
             mbt[j].setCharacterSize(font_size);
             mbt[j].setPosition(off2 + Vector2f((j % 3) * (l2), (j / 3) * (l2)) + txtOff);
+            mbt[i].setStyle(Text::Bold);
         }
     }
 
@@ -210,7 +220,7 @@ void Game_Gui::HoverHandle(const Event::MouseMoved *moved)
         int i = 0;
         for (auto &bbc : bigBoardContainerM)
         {
-            if (bbc.getGlobalBounds().contains(cursorPos))
+            if (bbc.getGlobalBounds().contains(cursorPos) && game.gameBoard.winners[i] == 0)
             {
                 prev_i = i;
                 int j = 0;
@@ -246,7 +256,7 @@ void Game_Gui::ClickHandle(const Event::MouseButtonReleased *clicked)
 
     if (!game.running)
         return;
-    
+
     if (outerContainerM.getGlobalBounds().contains(cursorPos))
     {
         int i = 0;
@@ -261,32 +271,15 @@ void Game_Gui::ClickHandle(const Event::MouseButtonReleased *clicked)
                     {
                         if (game.CanPlayOn(i, j, prevPlayableIndex))
                         {
+                            // sets the box's text depending on turn
                             miniBoardText[i][j].setString(game.currentTurn == 1 ? "X" : "O");
 
+                            // updates the actual board position and turn along with checking winners
+                            // decides which board is allowed to be played next
                             game.UpdatesOnClick(i, j);
-                            // Highlight playable miniboard
-                            if (game.playableIndex != -1)
-                            {
-                                if (prevPlayableIndex != -1)
-                                    bigBoardContainerM[prevPlayableIndex].setFillColor(Color::Transparent);
-                                bigBoardContainerM[game.playableIndex].setFillColor(Color(100, 100, 100, 50));
-                                prevPlayableIndex = game.playableIndex;
-                            } else {
-                                if(prevPlayableIndex != -1)
-                                    bigBoardContainerM[prevPlayableIndex].setFillColor(Color::Transparent);
-                                prevPlayableIndex = -1;
 
-                            }
-
-                            // Update HUD
-                            string trntxt = "Player Turn : " + string(game.currentTurn == 1 ? "X" : "O");
-                            playerTurnText.setString(trntxt);
-
-                            if (game.winner != 0)
-                            {
-                                string wnrTxt = "Winner : " + string(game.winner == 1 ? "X" : "O");
-                                winnerText.setString(wnrTxt);
-                            }
+                            // Updates gui that needs to be updated after clicking (valid clicking only)
+                            UpdateGuiOnClick(i, j, prevPlayableIndex);
                         }
 
                         return;
@@ -301,6 +294,42 @@ void Game_Gui::ClickHandle(const Event::MouseButtonReleased *clicked)
     }
 }
 
+inline void Game_Gui::UpdateGuiOnClick(int i, int j, int &prevPlayableIndex)
+{
+
+    // Highlight playable miniboard
+    if (game.playableIndex != -1)
+    {
+        if (prevPlayableIndex != -1)
+            bigBoardContainerM[prevPlayableIndex].setFillColor(Color::Transparent);
+        bigBoardContainerM[game.playableIndex].setFillColor(Color(100, 100, 100, 50));
+        prevPlayableIndex = game.playableIndex;
+    }
+    else
+    {
+        if (prevPlayableIndex != -1)
+            bigBoardContainerM[prevPlayableIndex].setFillColor(Color::Transparent);
+        prevPlayableIndex = -1;
+    }
+
+    // Update non-playable boards (if winner or drawed)
+    if (game.gameBoard.winners[i] != 0)
+    {
+        bigBoardText[i].setString(game.gameBoard.winners[i] == 1 ? "X" : "O");
+        bigBoardContainerM[i].setFillColor(Color(0, 0, 0, 200));
+    }
+
+    // Update HUD
+    string trntxt = "Player Turn : " + string(game.currentTurn == 1 ? "X" : "O");
+    playerTurnText.setString(trntxt);
+
+    if (game.winner != 0)
+    {
+        string wnrTxt = "Winner : " + string(game.winner == 1 ? "X" : "O");
+        winnerText.setString(wnrTxt);
+    }
+}
+
 void Game_Gui::Restart()
 {
 
@@ -311,14 +340,21 @@ void Game_Gui::Restart()
     bigBoardContainerO.clear();
     miniBoardContainer.clear();
     miniBoardText.clear();
+    bigBoardText.clear();
 
-    miniBoardText.resize(9, vector<Text>(9, font));
+    miniBoardText.resize(9, vector<Text>(9, xo_font));
+    bigBoardText.resize(9, xo_font);
     // Initialize the gui again
     Init(wndSize, mainContainerSize, margin, thickness, hud_width);
 }
 
 void DrawVisuals(Game_Gui &gui)
 {
+    // X and O text inside smallest box
+    for (auto &mbt : gui.miniBoardText)
+        for (auto &t : mbt)
+            gui.window.draw(t);
+
     // smallest boxes
     for (auto &mbs : gui.miniBoardContainer)
         for (auto &mb : mbs)
@@ -336,10 +372,9 @@ void DrawVisuals(Game_Gui &gui)
     gui.window.draw(gui.outerContainerM);
     gui.window.draw(gui.outerContainerO);
 
-    // X and O text
-    for (auto &mbt : gui.miniBoardText)
-        for (auto &t : mbt)
-            gui.window.draw(t);
+    // X and O text inside one tictactoe (winner of each board)
+    for (auto &bbt : gui.bigBoardText)
+        gui.window.draw(bbt);
 
     // Hud part
     gui.window.draw(gui.restartButton);
