@@ -1,0 +1,56 @@
+#pragma once
+#include <vector>
+
+using namespace std;
+
+class TicTacToe
+{
+public:
+    int winner;
+    vector<int> board; // 0 -> no one played, 1 -> X, -1 -> O
+
+    TicTacToe();
+    int CheckWinner();
+};
+
+TicTacToe::TicTacToe() : winner(0), board(vector<int>(9, 0))
+{
+}
+
+int TicTacToe::CheckWinner()
+{
+    // no need to check again if winner is already decided
+    if (winner != 0)
+        return winner;
+
+    // rows and cols
+    for (int i = 0; i < 3; i++)
+    {
+        // rows
+        if (board[i * 3] == board[i * 3 + 1] && board[i * 3 + 1] == board[i * 3 + 2])
+        {
+            winner = board[i * 3];
+            return board[i * 3];
+        }
+        // cols
+        if (board[i] == board[3 + i] && board[3 + i] == board[6 + i])
+        {
+            winner = board[i];
+            return board[i];
+        }
+    }
+
+    // diagonals
+    if (board[0] == board[4] && board[4] == board[8])
+    {
+        winner = board[0];
+        return board[0];
+    }
+    else if (board[2] == board[4] && board[4] == board[6])
+    {
+        winner = board[2];
+        return board[2];
+    }
+
+    return 0;
+}

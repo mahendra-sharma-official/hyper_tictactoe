@@ -1,0 +1,32 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "mingw-ninja",
+      "displayName": "MinGW + Ninja (local)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "${sourceDir}/toolchains/mingw64/bin/gcc.exe",
+        "CMAKE_CXX_COMPILER": "${sourceDir}/toolchains/mingw64/bin/g++.exe",
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "environment": {
+        "PATH": "${sourceDir}/toolchains/mingw64/bin;${sourceDir}/toolchains/ninja;{$penv{PATH}}"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "mingw-ninja",
+      "configuration": "Debug"
+    },
+    {
+      "name": "release",
+      "configurePreset": "mingw-ninja",
+      "configuration": "Release"
+    }
+  ]
+    
+}
