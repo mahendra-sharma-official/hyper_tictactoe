@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+set(SRC_INCLUDES_DIR "${CMAKE_SOURCE_DIR}/src/headers")
 
 # SFML3
 set(SFML_DIR "${CMAKE_SOURCE_DIR}/libraries/SFML-3.0.2")
@@ -12,6 +13,7 @@ set(SFML_INCLUDE_DIR "${SFML_DIR}/include")
 set(SFML_LIB_DIR "${SFML_DIR}/lib")
 
 include_directories(${SFML_INCLUDE_DIR}) 
+include_directories(${SRC_INCLUDES_DIR})
 # Executable
 add_executable(app "${SRC_FILES}")
 
