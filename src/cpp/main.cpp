@@ -2,6 +2,9 @@
 
 int main()
 {
+    // solver
+    
+
     // create the window
     sf::RenderWindow window(sf::VideoMode({1200, 1200}), "Hyper TicTacToe");
     window.setVerticalSyncEnabled(true);
@@ -22,7 +25,7 @@ int main()
 
     mcs = mcs < smallerWindow - 2 * hud_width ? mcs : smallerWindow - 2 * hud_width;
 
-    gui.Init(wndSize, mcs, margins, thickness, hud_width);
+    gui.Init(margins, thickness, hud_width);
 
     while (window.isOpen())
     {
@@ -38,7 +41,7 @@ int main()
                 window.setView(sf::View(resized / 2.f, resized));
 
                 wndSize = {(float)window.getSize().x, (float)window.getSize().y};
-                gui.UpdateResized(wndSize, mcs, margins, thickness, hud_width);
+                gui.UpdateResized();
             }
             if (event->is<Event::MouseMoved>())
             {
@@ -61,7 +64,7 @@ int main()
             window.clear(sf::Color::Black);
 
             // Draw calls here
-            DrawVisuals(gui);
+            gui.DrawVisuals();
 
             // end the current frame
             window.display();

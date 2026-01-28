@@ -1,33 +1,10 @@
-#pragma once
-#include "bigboard.hpp"
-#include <iostream>
-
-class Game
-{
-public:
-    int winner;
-    int currentTurn;
-    int playableIndex;
-    bool running;
-
-    BigBoard gameBoard;
-
-    Game();
-
-    void Init();
-    void Stop();
-    void Update();
-    void Restart();
-    int CheckWinner();
-    bool CanPlayOn(int i, int j, int &prev);
-    void UpdatesOnClick(int i, int j);
-};
+#include "game.hpp"
 
 Game::Game() : winner(0), currentTurn(1), running(false), playableIndex(-1), gameBoard(BigBoard())
 {
 }
 
-inline void Game::Init()
+void Game::Init()
 {
     running = true;
     winner = 0;             // Reset the winner
@@ -36,16 +13,16 @@ inline void Game::Init()
     gameBoard = BigBoard(); // Reset the board
 }
 
-inline void Game::Stop()
+void Game::Stop()
 {
     running = false;
 }
 
-inline void Game::Update()
+void Game::Update()
 {
 }
 
-inline void Game::Restart()
+void Game::Restart()
 {
     Init();
 }
@@ -73,6 +50,9 @@ int Game::CheckWinner()
         return gameBoard.winners[0];
     else if (gameBoard.winners[2] == gameBoard.winners[4] && gameBoard.winners[4] == gameBoard.winners[6])
         return gameBoard.winners[4];
+
+    if (!gameBoard.IsMoveLeft()) // draw
+        return 2;
 
     return 0;
 }

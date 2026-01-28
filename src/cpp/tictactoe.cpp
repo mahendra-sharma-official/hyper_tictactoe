@@ -1,17 +1,4 @@
-#pragma once
-#include <vector>
-
-using namespace std;
-
-class TicTacToe
-{
-public:
-    int winner;
-    vector<int> board; // 0 -> no one played, 1 -> X, -1 -> O
-
-    TicTacToe();
-    int CheckWinner();
-};
+#include "tictactoe.hpp"
 
 TicTacToe::TicTacToe() : winner(0), board(vector<int>(9, 0))
 {
@@ -52,5 +39,16 @@ int TicTacToe::CheckWinner()
         return board[2];
     }
 
+    if (!IsMoveLeft())
+        return 2;   // draw
+
     return 0;
+}
+
+bool TicTacToe::IsMoveLeft()
+{
+    for (int &v : board)
+        if (v == 0)
+            return true;
+    return false;
 }
