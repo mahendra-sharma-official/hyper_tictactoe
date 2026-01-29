@@ -1,6 +1,5 @@
 #pragma once
 #include "bigboard.hpp"
-#include <iostream>
 
 class Game
 {

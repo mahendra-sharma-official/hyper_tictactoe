@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Event.hpp>
 #include "game.hpp"
-#include <iostream>
 
 using namespace sf;
 

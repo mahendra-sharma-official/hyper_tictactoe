@@ -301,7 +301,7 @@ inline void Game_Gui::UpdateGuiOnClick(int i, int j, int &prevPlayableIndex)
     // Update non-playable boards (if winner or drawed)
     if (game.gameBoard.winners[i] != 0)
     {
-        char result = game.gameBoard.winners[i] == 1 ? 'X' : (game.gameBoard.winners[i] == -1 ? 'O' : 'D');
+        char result = game.gameBoard.winners[i] == 1 ? 'X' : (game.gameBoard.winners[i] == -1 ? 'O' : ' ');
         bigBoardText[i].setString(result);
         bigBoardContainerM[i].setFillColor(Color(0, 0, 0, 200));
     }
@@ -312,7 +312,7 @@ inline void Game_Gui::UpdateGuiOnClick(int i, int j, int &prevPlayableIndex)
 
     if (game.winner != 0)
     {
-        char result = game.gameBoard.winners[i] == 1 ? 'X' : (game.gameBoard.winners[i] == -1 ? 'O' : 'D');
+        string result = game.gameBoard.winners[i] == 1 ? "X" : (game.gameBoard.winners[i] == -1 ? "O" : "Draw");
         string wnrTxt = "Winner : " + result;
         winnerText.setString(wnrTxt);
     }

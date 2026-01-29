@@ -34,14 +34,14 @@ void Game::CheckWinner()
     for (int i = 0; i < 3; i++)
     {
         // rows
-        if ((gameBoard.winners[i * 3] == gameBoard.winners[i * 3 + 1]) && (gameBoard.winners[i * 3 + 1] == gameBoard.winners[i * 3 + 2]))
+        if ((gameBoard.winners[i * 3] == gameBoard.winners[i * 3 + 1]) && (gameBoard.winners[i * 3 + 1] == gameBoard.winners[i * 3 + 2]) && gameBoard.winners[i * 3] != 0)
         {
             winner = gameBoard.winners[i * 3];
             return;
         }
 
         // cols
-        if ((gameBoard.winners[i] == gameBoard.winners[3 + i]) && (gameBoard.winners[3 + i] == gameBoard.winners[6 + i]))
+        if ((gameBoard.winners[i] == gameBoard.winners[3 + i]) && (gameBoard.winners[3 + i] == gameBoard.winners[6 + i]) && gameBoard.winners[i] != 0)
         {
             winner = gameBoard.winners[i];
             return;
@@ -49,12 +49,12 @@ void Game::CheckWinner()
     }
 
     // diagonals
-    if ((gameBoard.winners[0] == gameBoard.winners[4]) && (gameBoard.winners[4] == gameBoard.winners[8]))
+    if ((gameBoard.winners[0] == gameBoard.winners[4]) && (gameBoard.winners[4] == gameBoard.winners[8]) && gameBoard.winners[0] != 0)
     {
         winner = gameBoard.winners[4];
         return;
     }
-    else if ((gameBoard.winners[2] == gameBoard.winners[4]) && (gameBoard.winners[4] == gameBoard.winners[6]))
+    else if ((gameBoard.winners[2] == gameBoard.winners[4]) && (gameBoard.winners[4] == gameBoard.winners[6]) && gameBoard.winners[2] != 0)
     {
         winner = gameBoard.winners[4];
         return;

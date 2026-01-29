@@ -2,13 +2,17 @@
 
 int main()
 {
-
     // create the window
     sf::RenderWindow window(sf::VideoMode({800, 600}), "Hyper TicTacToe");
     window.setFramerateLimit(60);
-    // window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
 
+    // icon
+    sf::Image icon_img;
+    if (!icon_img.loadFromFile("res/icon/logo.png"))
+        return -1;
+
+    window.setIcon(icon_img.getSize(), icon_img.getPixelsPtr());
     // Game Initialization
     Game game;
     game.Init();
@@ -60,4 +64,5 @@ int main()
         // end the current frame
         window.display();
     }
+    return 0;
 }
