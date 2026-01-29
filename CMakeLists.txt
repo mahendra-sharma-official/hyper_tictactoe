@@ -15,10 +15,10 @@ add_compile_definitions(SFML_STATIC NDEBUG)
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 set(SRC_INCLUDES_DIR "${CMAKE_SOURCE_DIR}/src/headers")
 
-# SFML config location (correct)
+# SFML config location
 set(SFML_DIR "${CMAKE_SOURCE_DIR}/libraries/SFML-3.0.2/lib/cmake/SFML")
 
-# SFML 3 uses *capitalized* components
+# SFML 3  Package
 find_package(SFML 3.0.2 REQUIRED COMPONENTS Graphics)
 
 add_executable(app ${SRC_FILES})
@@ -35,3 +35,6 @@ target_link_options(app PRIVATE
 
 
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
+
+file(COPY "${CMAKE_SOURCE_DIR}/res"
+DESTINATION "${CMAKE_BINARY_DIR}/")
