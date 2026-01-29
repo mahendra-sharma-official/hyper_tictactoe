@@ -10,6 +10,6 @@ public:
     vector<int> board; // 0 -> no one played, 1 -> X, -1 -> O
 
     TicTacToe();
-    int CheckWinner();
+    void CheckWinner();
     bool IsMoveLeft();
 };

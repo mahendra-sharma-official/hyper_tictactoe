@@ -16,9 +16,8 @@ public:
 
     void Init();
     void Stop();
-    void Update();
     void Restart();
-    int CheckWinner();
-    bool CanPlayOn(int i, int j, int &prev);
+    void CheckWinner();
+    bool CanPlayOn(int i, int j);
     void UpdatesOnClick(int i, int j);
 };

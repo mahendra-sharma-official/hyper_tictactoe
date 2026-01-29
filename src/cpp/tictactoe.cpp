@@ -4,45 +4,43 @@ TicTacToe::TicTacToe() : winner(0), board(vector<int>(9, 0))
 {
 }
 
-int TicTacToe::CheckWinner()
+void TicTacToe::CheckWinner()
 {
     // no need to check again if winner is already decided
     if (winner != 0)
-        return winner;
+        return;
 
     // rows and cols
     for (int i = 0; i < 3; i++)
     {
         // rows
-        if (board[i * 3] == board[i * 3 + 1] && board[i * 3 + 1] == board[i * 3 + 2])
+        if ((board[i * 3] == board[i * 3 + 1]) && (board[i * 3 + 1] == board[i * 3 + 2]) && board[i * 3] != 0)
         {
             winner = board[i * 3];
-            return board[i * 3];
+            return;
         }
         // cols
-        if (board[i] == board[3 + i] && board[3 + i] == board[6 + i])
+        if ((board[i] == board[3 + i]) && (board[3 + i] == board[6 + i]) && board[i] != 0)
         {
             winner = board[i];
-            return board[i];
+            return;
         }
     }
 
     // diagonals
-    if (board[0] == board[4] && board[4] == board[8])
+    if ((board[0] == board[4]) && (board[4] == board[8]) && board[4] != 0)
     {
         winner = board[0];
-        return board[0];
+        return;
     }
-    else if (board[2] == board[4] && board[4] == board[6])
+    else if ((board[2] == board[4]) && (board[4] == board[6]) && board[4] != 0)
     {
         winner = board[2];
-        return board[2];
+        return;
     }
 
     if (!IsMoveLeft())
-        return 2;   // draw
-
-    return 0;
+        winner = 2; // draw
 }
 
 bool TicTacToe::IsMoveLeft()

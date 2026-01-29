@@ -262,7 +262,7 @@ void Game_Gui::ClickHandle(const Event::MouseButtonReleased *clicked)
                 {
                     if (mbc.getGlobalBounds().contains(cursorPos) && game.gameBoard.miniBoards[i].board[j] == 0)
                     {
-                        if (game.CanPlayOn(i, j, prevPlayableIndex))
+                        if (game.CanPlayOn(i, j))
                         {
                             miniBoardText[i][j].setString(game.currentTurn == 1 ? "X" : "O");
                             game.UpdatesOnClick(i, j);                 // Game's actual main logic starts here

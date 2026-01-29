@@ -6,7 +6,7 @@ int main()
     // create the window
     sf::RenderWindow window(sf::VideoMode({800, 600}), "Hyper TicTacToe");
     window.setFramerateLimit(60);
-    //window.setVerticalSyncEnabled(true);
+    // window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
 
     // Game Initialization
@@ -45,14 +45,12 @@ int main()
                 auto *clicked = event->getIf<sf::Event::MouseButtonReleased>();
                 gui.ClickHandle(clicked);
             }
-
-            // Logic
-            if (game.running)
-            {
-                game.Update();
-            }
         }
 
+        // Logic
+        if (game.running)
+        {
+        }
         // Background
         window.clear(sf::Color::Black);
 
