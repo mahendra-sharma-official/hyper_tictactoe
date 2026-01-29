@@ -29,10 +29,9 @@ target_link_options(app PRIVATE
     -static
     -static-libgcc
     -static-libstdc++
+    -mwindows
     -s
 )
-
-
 
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
