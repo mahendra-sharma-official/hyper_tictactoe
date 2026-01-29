@@ -2,12 +2,11 @@
 
 int main()
 {
-    // solver
-    
 
     // create the window
-    sf::RenderWindow window(sf::VideoMode({1200, 1200}), "Hyper TicTacToe");
-    window.setVerticalSyncEnabled(true);
+    sf::RenderWindow window(sf::VideoMode({800, 600}), "Hyper TicTacToe");
+    window.setFramerateLimit(60);
+    //window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
 
     // Game Initialization
@@ -15,15 +14,9 @@ int main()
     game.Init();
 
     Game_Gui gui(game, window);
-
-    Vector2f wndSize = {(float)window.getSize().x, (float)window.getSize().y};
-    float smallerWindow = wndSize.y < wndSize.x ? wndSize.y : wndSize.x;
     int hud_width = 100;
-    int mcs = 900;
     int margins = 10;
     int thickness = 2;
-
-    mcs = mcs < smallerWindow - 2 * hud_width ? mcs : smallerWindow - 2 * hud_width;
 
     gui.Init(margins, thickness, hud_width);
 
@@ -40,7 +33,6 @@ int main()
                 sf::Vector2f resized = sf::Vector2f(event->getIf<sf::Event::Resized>()->size);
                 window.setView(sf::View(resized / 2.f, resized));
 
-                wndSize = {(float)window.getSize().x, (float)window.getSize().y};
                 gui.UpdateResized();
             }
             if (event->is<Event::MouseMoved>())
@@ -59,15 +51,15 @@ int main()
             {
                 game.Update();
             }
-
-            // Background
-            window.clear(sf::Color::Black);
-
-            // Draw calls here
-            gui.DrawVisuals();
-
-            // end the current frame
-            window.display();
         }
+
+        // Background
+        window.clear(sf::Color::Black);
+
+        // Draw calls here
+        gui.DrawVisuals();
+
+        // end the current frame
+        window.display();
     }
 }
