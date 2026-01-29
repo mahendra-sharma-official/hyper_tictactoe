@@ -1,32 +1,18 @@
 {
-  "version": 3,
-  "configurePresets": [
-    {
-      "name": "mingw-ninja",
-      "displayName": "MinGW + Ninja (local)",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "${sourceDir}/toolchains/mingw64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "${sourceDir}/toolchains/mingw64/bin/g++.exe",
-        "CMAKE_BUILD_TYPE": "Debug"
-      },
-      "environment": {
-        "PATH": "${sourceDir}/toolchains/mingw64/bin;${sourceDir}/toolchains/ninja;{$penv{PATH}}"
-      }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "debug",
-      "configurePreset": "mingw-ninja",
-      "configuration": "Debug"
-    },
-    {
-      "name": "release",
-      "configurePreset": "mingw-ninja",
-      "configuration": "Release"
-    }
-  ]
-    
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "GCC 14.2.0 x86_64-w64-mingw32",
+            "displayName": "GCC 14.2.0 x86_64-w64-mingw32",
+            "description": "Using compilers: C = d:\\Development\\mingw64\\bin\\gcc.exe, CXX = d:\\Development\\mingw64\\bin\\g++.exe",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/install",
+                "CMAKE_C_COMPILER": "d:/Development/mingw64/bin/gcc.exe",
+                "CMAKE_CXX_COMPILER": "d:/Development/mingw64/bin/g++.exe",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ]
 }
