@@ -17,12 +17,20 @@ set(SFML_DIR "${CMAKE_SOURCE_DIR}/libraries/SFML-3.0.2/lib/cmake/SFML")
 find_package(SFML 3.0.2 REQUIRED COMPONENTS Graphics)
 
 # Sources
-file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/cpp/*.cpp")
 set(SRC_INCLUDES_DIR "${CMAKE_SOURCE_DIR}/src/headers")
 
 add_executable(app ${SRC_FILES})
 target_include_directories(app PRIVATE ${SRC_INCLUDES_DIR})
 target_link_libraries(app PRIVATE SFML::Graphics)
+
+# Link Options
+if(WIN32)
+    target_link_options(app PRIVATE
+        $<$<CONFIG:Release>:-mwindows>
+        $<$<CONFIG:Debug>:-mconsole>
+    )
+endif()
 
 # Compile options 
 target_compile_options(app PRIVATE

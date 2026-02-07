@@ -1,4 +1,6 @@
 #include "game_gui.hpp"
+#include "minimax.hpp"
+#include "autoplay.hpp"
 
 int main()
 {
@@ -13,10 +15,14 @@ int main()
         return -1;
 
     window.setIcon(icon_img.getSize(), icon_img.getPixelsPtr());
+
     // Game Initialization
     Game game;
     game.Init();
+    game.solverDepth = 4;
+    bool autoplay = false;
 
+    // Gui Initialization
     Game_Gui gui(game, window);
     int hud_width = 100;
     int margins = 10;
@@ -54,6 +60,10 @@ int main()
         // Logic
         if (game.running)
         {
+            if (game.winner == 0 && autoplay == true)
+            {
+                AutoPlay(game, gui, true, false);
+            }
         }
         // Background
         window.clear(sf::Color::Black);

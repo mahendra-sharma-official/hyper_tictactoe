@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Event.hpp>
 #include "game.hpp"
+#include "minimax.hpp"
+#include "index.hpp"
 
 using namespace sf;
 
@@ -11,6 +13,9 @@ public:
     // References
     RenderWindow &window;
     Game &game;
+
+    // Globals of sort
+    int prevPlayableIndex = -1;
 
     // Fonts
     Font txt_font; // for noraml texts
@@ -38,13 +43,18 @@ public:
     RectangleShape lowerHudContainer;
     Text playerTurnText;          // Shown in upper hud
     Text restartText;             // Shown in upper hud
-    Text winnerText;              // shown in lower hud
+    Text solveXText;              // Shown in lower hud
+    Text solveOText;              // Shown in lower hud
+    Text winnerText;              // Shown in lower hud
     RectangleShape restartButton; // Shown in upper hud
+    RectangleShape solveXButton;  // Shown in lower hud
+    RectangleShape solveOButton;  // Shown in upper hud
 
     Game_Gui(Game &g, RenderWindow &w);
 
     void Init(int mrgns, int thkns, int hudWdth);
     void UpdateResized();
+    void HighlightBestMove();
     void HoverHandle(const Event::MouseMoved *moved);
     void ClickHandle(const Event::MouseButtonReleased *clicked);
     void UpdateGuiOnClick(int i, int j, int &prevPlayableIndex);

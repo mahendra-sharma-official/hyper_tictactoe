@@ -1,15 +1,16 @@
 #include "game.hpp"
 
-Game::Game() : winner(0), currentTurn(1), running(false), playableIndex(-1), gameBoard(BigBoard())
+Game::Game() : winner(0), currentTurn(1), running(false), playableIndex(-1), solverDepth(1), playedTotalTurns(0), gameBoard(BigBoard())
 {
 }
 
 void Game::Init()
 {
     running = true;
-    winner = 0;             // No winner
-    currentTurn = 1;        // X plays first
-    playableIndex = -1;     // -1 means no restriction on where you can play
+    winner = 0;         // No winner
+    currentTurn = 1;    // X plays first
+    playableIndex = -1; // -1 means no restriction on where you can play
+    playedTotalTurns = 0;
     gameBoard = BigBoard(); // Reset the board
 }
 
@@ -86,6 +87,7 @@ bool Game::CanPlayOn(int i, int j)
 void Game::UpdatesOnClick(int i, int j)
 {
     gameBoard.miniBoards[i].board[j] = currentTurn;
+    playedTotalTurns++;
 
     // Checking full board's individual tictactoe winners
     gameBoard.CheckBoardWinners();

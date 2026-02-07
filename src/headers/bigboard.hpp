@@ -10,6 +10,7 @@ public:
     BigBoard();
     bool IsMoveLeft();
     void CheckBoardWinners();
+    int GetWinner();
 };
 
 

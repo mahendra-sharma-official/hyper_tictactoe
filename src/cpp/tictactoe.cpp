@@ -14,13 +14,13 @@ void TicTacToe::CheckWinner()
     for (int i = 0; i < 3; i++)
     {
         // rows
-        if ((board[i * 3] == board[i * 3 + 1]) && (board[i * 3 + 1] == board[i * 3 + 2]) && board[i * 3] != 0)
+        if ((board[i * 3] == board[i * 3 + 1]) && (board[i * 3 + 1] == board[i * 3 + 2]) && board[i * 3] != 0 && board[i * 3] != 2)
         {
             winner = board[i * 3];
             return;
         }
         // cols
-        if ((board[i] == board[3 + i]) && (board[3 + i] == board[6 + i]) && board[i] != 0)
+        if ((board[i] == board[3 + i]) && (board[3 + i] == board[6 + i]) && board[i] != 0 && board[i] != 2)
         {
             winner = board[i];
             return;
@@ -28,12 +28,12 @@ void TicTacToe::CheckWinner()
     }
 
     // diagonals
-    if ((board[0] == board[4]) && (board[4] == board[8]) && board[4] != 0)
+    if ((board[0] == board[4]) && (board[4] == board[8]) && board[4] != 0 && board[4] != 2)
     {
         winner = board[0];
         return;
     }
-    else if ((board[2] == board[4]) && (board[4] == board[6]) && board[4] != 0)
+    else if ((board[2] == board[4]) && (board[4] == board[6]) && board[4] != 0 && board[4] != 2)
     {
         winner = board[2];
         return;

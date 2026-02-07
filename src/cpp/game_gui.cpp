@@ -1,4 +1,5 @@
 #include "game_gui.hpp"
+#include "gui_helpers.hpp"
 
 Game_Gui::Game_Gui(Game &g, RenderWindow &w)
     : game(g),
@@ -7,79 +8,17 @@ Game_Gui::Game_Gui(Game &g, RenderWindow &w)
       xo_font("res/fonts/craftycandy.otf"),
       playerTurnText(txt_font),
       restartText(txt_font),
+      solveXText(txt_font),
+      solveOText(txt_font),
       winnerText(txt_font)
 {
+    prevPlayableIndex = -1;
+    game.toggleSolveO = false;
+    game.toggleSolveX = false;
     hud_width = 100;
     backgroundColor = Color::Black;
     miniBoardText.assign(9, vector<Text>(9, xo_font));
     bigBoardText.assign(9, xo_font);
-}
-
-// Helpers for creating game gui elements
-void SetSingleRectGui(RectangleShape &rct, Vector2f pos, Vector2f size, float outline_thickness = 0, Vector2f origin = {0, 0}, Color rect_color = Color::White, Color outline_color = Color::White)
-{
-    rct.setOrigin(origin);
-    rct.setSize(size);
-    rct.setOutlineThickness(outline_thickness);
-    rct.setPosition(pos);
-    rct.setFillColor(rect_color);
-    rct.setOutlineColor(outline_color);
-}
-
-void SetSingleTextGui(Text &txt, string txt_content, Vector2f pos, float font_size, Color text_color = Color::White)
-{
-    txt.setCharacterSize(font_size);
-    txt.setString(txt_content);
-    FloatRect textRect = txt.getLocalBounds();
-    txt.setOrigin({textRect.position.x + textRect.size.x / 2.0f,
-                   textRect.position.y + textRect.size.y / 2.0f});
-    txt.setPosition(pos);
-    txt.setFillColor(text_color);
-}
-
-void SetBoardLayoutGui(Game_Gui &gui, vector<RectangleShape> &board, Vector2f off, float l, float m, Color outline_col)
-{
-    board.reserve(9);
-    for (int i = 0; i < 9; i++)
-    {
-        board.emplace_back();
-        SetSingleRectGui(board[i], off + Vector2f((i % 3) * (l), (i / 3) * (l)), {l, l}, m, {0, 0}, Color::Transparent, outline_col);
-    }
-}
-
-void SetBoardTextGui(Game_Gui &gui, vector<Text> &txts, Vector2f off, Vector2f txt_off, Vector2f origin, float l, float font_size, Color text_color)
-{
-    txts.reserve(9);
-    for (int i = 0; i < 9; i++)
-    {
-        SetSingleTextGui(txts[i], " ", off + Vector2f((i % 3) * (l), (i / 3) * (l)) + txt_off, font_size, text_color);
-        txts[i].setOrigin(origin);
-        txts[i].setStyle(Text::Bold);
-    }
-}
-
-void SetHudGui(Game_Gui &gui, float hud_width, float hud_font_size)
-{
-    // UPPER HUD PART
-    SetSingleRectGui(gui.upperHudContainer, gui.offset - Vector2f(0, hud_width), {(float)gui.mainContainerSize, hud_width});
-    gui.upperHudContainer.setFillColor(gui.backgroundColor);
-
-    // Player turn text
-    string trntxt = "Player Turn : " + string(gui.game.currentTurn == 1 ? "X" : "O");
-    SetSingleTextGui(gui.playerTurnText, trntxt, {gui.offset.x + gui.mainContainerSize * 0.80f, gui.offset.y / 2.f}, hud_font_size, Color::White);
-
-    // Restart button with text
-    SetSingleTextGui(gui.restartText, "Restart", {gui.offset.x + gui.mainContainerSize * 0.20f, gui.offset.y / 2.f}, hud_font_size, Color::White);
-    SetSingleRectGui(gui.restartButton, gui.restartText.getPosition() - Vector2f(hud_font_size / 4.f, 0.f),
-                     gui.restartText.getLocalBounds().size + Vector2f(hud_font_size / 2.f, hud_font_size / 2.f), 0, gui.restartText.getOrigin(), Color(130, 130, 130, 130));
-
-    // LOWER HUD PART
-    SetSingleRectGui(gui.lowerHudContainer, {gui.offset.x, gui.offset.y + gui.mainContainerSize + hud_width}, {(float)gui.mainContainerSize, hud_width});
-    gui.lowerHudContainer.setFillColor(gui.backgroundColor);
-
-    // winner text
-    string wnrTxt = "Winner : " + string(gui.game.winner == 1 ? "X" : "O");
-    SetSingleTextGui(gui.winnerText, wnrTxt, {gui.offset.x + gui.mainContainerSize * 0.5f, gui.offset.y + gui.mainContainerSize + hud_width / 2.f}, hud_font_size, Color::White);
 }
 
 void Game_Gui::Init(int mrgns, int thkns, int hudWdth)
@@ -90,6 +29,8 @@ void Game_Gui::Init(int mrgns, int thkns, int hudWdth)
     margin = mrgns;
     thickness = thkns;
     hud_width = hudWdth;
+    game.toggleSolveO = false;
+    game.toggleSolveX = false;
 
     // For Main board
     float l0 = mainContainerSize;
@@ -158,9 +99,12 @@ void Game_Gui::UpdateResized()
     vector<string> bbt_text(9);                            // for text (big)
     vector<vector<string>> mbt_text(9, vector<string>(9)); // for text (small)
     string wnr_txt;
+    bool tgl_slvX, tgl_slvO;
 
     // Store single unit things here
     wnr_txt = winnerText.getString();
+    tgl_slvO = game.toggleSolveO;
+    tgl_slvX = game.toggleSolveX;
 
     for (int i = 0; i < 9; i++) // Store required things using this loop (if applicable)
     {
@@ -178,6 +122,8 @@ void Game_Gui::UpdateResized()
     // RE ASSIGN WHAT NEEDED TO PERSIST
     // single units here
     winnerText.setString(wnr_txt);
+    game.toggleSolveO = tgl_slvO;
+    game.toggleSolveX = tgl_slvX;
 
     for (int i = 0; i < 9; i++) // loop applicable here
     {
@@ -187,6 +133,41 @@ void Game_Gui::UpdateResized()
         for (int j = 0; j < 9; j++)
         {
             miniBoardText[i][j].setString(mbt_text[i][j]);
+        }
+    }
+}
+
+void Game_Gui::HighlightBestMove()
+{
+    static Index prev_bestx = {-1, -1};
+    static Index prev_besto = {-1, -1};
+
+    // Remove the previously highlighted block and highligh new block
+    if (game.currentTurn == 1 && game.toggleSolveX) // X turn so don't highlight O related stuff
+    {
+        if (prev_besto.i != -1 && prev_besto.j != -1)
+        {
+            miniBoardContainer[prev_besto.i][prev_besto.j].setFillColor(Color::Transparent);
+            prev_besto = {-1, -1};
+        }
+
+        if (game.bestMoveX.i != -1 && game.bestMoveX.j != -1)
+        {
+            miniBoardContainer[game.bestMoveX.i][game.bestMoveX.j].setFillColor(Color(0, 100, 0, 180));
+            prev_bestx = game.bestMoveX;
+        }
+    }
+    else if (game.currentTurn == -1 && game.toggleSolveO) // O turn so don't highlight X related stuff
+    {
+        if (prev_bestx.i != -1 && prev_bestx.j != -1)
+        {
+            miniBoardContainer[prev_bestx.i][prev_bestx.j].setFillColor(Color::Transparent);
+            prev_bestx = {-1, -1};
+        }
+        if (game.bestMoveO.i != -1 && game.bestMoveO.j != -1)
+        {
+            miniBoardContainer[game.bestMoveO.i][game.bestMoveO.j].setFillColor(Color(100, 0, 0, 180));
+            prev_besto = game.bestMoveO;
         }
     }
 }
@@ -202,6 +183,22 @@ void Game_Gui::HoverHandle(const Event::MouseMoved *moved)
         restartButton.setFillColor(Color(100, 100, 100, 220));
     else
         restartButton.setFillColor(Color(100, 100, 100, 140));
+
+    // HOVERING EFFECT FOR SOLVE O BUTTON
+    if (solveOButton.getGlobalBounds().contains(cursorPos))
+        solveOButton.setFillColor(Color(100, 100, 100, 220));
+    else if (game.toggleSolveO)
+        solveOButton.setFillColor(Color(100, 0, 0, 200));
+    else
+        solveOButton.setFillColor(Color(100, 100, 100, 140));
+
+    // HOVERING EFFECT FOR SOLVE X BUTTON
+    if (solveXButton.getGlobalBounds().contains(cursorPos))
+        solveXButton.setFillColor(Color(100, 100, 100, 220));
+    else if (game.toggleSolveX)
+        solveXButton.setFillColor(Color(0, 100, 0, 200));
+    else
+        solveXButton.setFillColor(Color(100, 100, 100, 140));
 
     // hovering effect removed from previous element if hovering new element
     if (!miniBoardContainer[prev_i][prev_j].getGlobalBounds().contains(cursorPos))
@@ -232,18 +229,35 @@ void Game_Gui::HoverHandle(const Event::MouseMoved *moved)
             i++;
         }
     }
+    if (game.toggleSolveO || game.toggleSolveX)
+    {
+        HighlightBestMove();
+    }
 }
 
 void Game_Gui::ClickHandle(const Event::MouseButtonReleased *clicked)
 {
     Vector2f cursorPos = Vector2f(clicked->position);
-    static int prevPlayableIndex = -1;
 
     if (restartButton.getGlobalBounds().contains(cursorPos))
     {
         game.Restart(); // game restart
         Restart();      // gui restart
         prevPlayableIndex = -1;
+        return;
+    }
+
+    if (solveOButton.getGlobalBounds().contains(cursorPos))
+    {
+        game.toggleSolveO = game.toggleSolveO ? false : true;
+        solveOButton.setFillColor(game.toggleSolveO ? Color(100, 0, 0, 200) : Color(100, 100, 100, 140));
+        return;
+    }
+
+    if (solveXButton.getGlobalBounds().contains(cursorPos))
+    {
+        game.toggleSolveX = game.toggleSolveX ? false : true;
+        solveXButton.setFillColor(game.toggleSolveX ? Color(0, 100, 0, 200) : Color(100, 100, 100, 140));
         return;
     }
 
@@ -267,6 +281,24 @@ void Game_Gui::ClickHandle(const Event::MouseButtonReleased *clicked)
                             miniBoardText[i][j].setString(game.currentTurn == 1 ? "X" : "O");
                             game.UpdatesOnClick(i, j);                 // Game's actual main logic starts here
                             UpdateGuiOnClick(i, j, prevPlayableIndex); // Updates gui that needs to be updated after valid clicking
+
+                            // Run Solver
+                            if (game.toggleSolveX && game.currentTurn == 1)
+                            {
+                                BigBoard temp = game.gameBoard;
+                                game.bestMoveX = game.solver.FindBestMove(temp, game.playableIndex,
+                                                                          game.currentTurn,
+                                                                          game.solverDepth, game.playedTotalTurns);
+                            }
+
+                            if (game.toggleSolveO && game.currentTurn == -1)
+                            {
+                                BigBoard temp = game.gameBoard;
+                                game.bestMoveO = game.solver.FindBestMove(temp, game.playableIndex,
+                                                                          game.currentTurn,
+                                                                          game.solverDepth, game.playedTotalTurns);
+                            }
+                            HighlightBestMove();
                         }
 
                         return;
@@ -281,7 +313,7 @@ void Game_Gui::ClickHandle(const Event::MouseButtonReleased *clicked)
     }
 }
 
-inline void Game_Gui::UpdateGuiOnClick(int i, int j, int &prevPlayableIndex)
+void Game_Gui::UpdateGuiOnClick(int i, int j, int &prevPlayableIndex)
 {
     // Highlight playable miniboard
     if (game.playableIndex != -1)
@@ -370,6 +402,10 @@ void Game_Gui::DrawVisuals()
     // Hud part
     window.draw(restartButton);
     window.draw(restartText);
+    window.draw(solveOButton);
+    window.draw(solveOText);
+    window.draw(solveXButton);
+    window.draw(solveXText);
     window.draw(playerTurnText);
 
     if (game.winner != 0)
