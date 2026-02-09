@@ -74,7 +74,6 @@ set_property(TARGET app PROPERTY
 # Copy dlls (SFML)
 set(SFML_DLL_DIR "${SFML_DIR}/../../../bin")
 add_custom_command(TARGET app POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:app>/dlls
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<$<CONFIG:Debug>:${SFML_DLL_DIR}/sfml-graphics-d-3.dll>
         $<$<CONFIG:Debug>:${SFML_DLL_DIR}/sfml-window-d-3.dll>

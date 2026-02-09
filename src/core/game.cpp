@@ -65,7 +65,6 @@ void Game::CheckWinner() {
 }
 
 bool Game::CanPlayOn(int i, int j) {
-  return true;
   if (gameBoard.winners[i] != 0 && playableIndex == i) {
     playableIndex = -1;
     return false;
