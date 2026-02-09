@@ -7,7 +7,7 @@ static float WIN_SCORE = 100000.f;
 static float LOSS_SCORE = -100000.f;
 static float DRAW_SCORE = 0.f;
 
-float EvaluateLine(int a, int b, int c, int rootPlayer) {
+static float EvaluateLine(int a, int b, int c, int rootPlayer) {
   int sum = a + b + c;
   int empty = (a == 0) + (b == 0) + (c == 0);
 
@@ -19,7 +19,7 @@ float EvaluateLine(int a, int b, int c, int rootPlayer) {
   return 0.f;
 }
 
-float EvaluateSmallBoard(const vector<int> &board, int rootPlayer) {
+static float EvaluateSmallBoard(const vector<int> &board, int rootPlayer) {
   float score = 0.f;
 
   for (int i = 0; i < 3; i++) {

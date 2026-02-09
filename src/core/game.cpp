@@ -26,43 +26,46 @@ void Game::CheckWinner() {
   // no need to check again if winner is already decided
   if (winner != 0) return;
 
+  vector<int>& winners_ref = gameBoard.winners;
   // rows and cols
   for (int i = 0; i < 3; i++) {
     // rows
-    if ((gameBoard.winners[i * 3] == gameBoard.winners[i * 3 + 1]) &&
-        (gameBoard.winners[i * 3 + 1] == gameBoard.winners[i * 3 + 2]) &&
-        gameBoard.winners[i * 3] != 0) {
-      winner = gameBoard.winners[i * 3];
+    if ((winners_ref[i * 3] == winners_ref[i * 3 + 1]) &&
+        (winners_ref[i * 3 + 1] == winners_ref[i * 3 + 2]) &&
+        (winners_ref[i * 3] != 0 && winners_ref[i * 3] != 2)) {
+      winner = winners_ref[i * 3];
       return;
     }
 
     // cols
-    if ((gameBoard.winners[i] == gameBoard.winners[3 + i]) &&
-        (gameBoard.winners[3 + i] == gameBoard.winners[6 + i]) &&
-        gameBoard.winners[i] != 0) {
-      winner = gameBoard.winners[i];
+    if ((winners_ref[i] == winners_ref[3 + i]) &&
+        (winners_ref[3 + i] == winners_ref[6 + i]) &&
+        (winners_ref[i] != 0 && winners_ref[i] != 2)) {
+      winner = winners_ref[i];
       return;
     }
   }
 
   // diagonals
-  if ((gameBoard.winners[0] == gameBoard.winners[4]) &&
-      (gameBoard.winners[4] == gameBoard.winners[8]) &&
-      gameBoard.winners[0] != 0) {
-    winner = gameBoard.winners[4];
+  if ((winners_ref[0] == winners_ref[4]) &&
+      (winners_ref[4] == winners_ref[8]) &&
+      (winners_ref[4] != 0 && winners_ref[4] != 2)) {
+    winner = winners_ref[4];
     return;
-  } else if ((gameBoard.winners[2] == gameBoard.winners[4]) &&
-             (gameBoard.winners[4] == gameBoard.winners[6]) &&
-             gameBoard.winners[2] != 0) {
-    winner = gameBoard.winners[4];
+  } else if ((winners_ref[2] == winners_ref[4]) &&
+             (winners_ref[4] == winners_ref[6]) &&
+             (winners_ref[4] != 0 && winners_ref[4] != 2)) {
+    winner = winners_ref[4];
     return;
   }
 
   if (!gameBoard.IsMoveLeft())  // draw
     winner = 2;
+  return;
 }
 
 bool Game::CanPlayOn(int i, int j) {
+  return true;
   if (gameBoard.winners[i] != 0 && playableIndex == i) {
     playableIndex = -1;
     return false;

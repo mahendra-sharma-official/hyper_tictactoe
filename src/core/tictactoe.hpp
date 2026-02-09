@@ -11,4 +11,5 @@ class TicTacToe {
   TicTacToe();
   void CheckWinner();
   bool IsMoveLeft();
+  bool AreElementsAtIndicesEqual(int i, int j, int k);
 };

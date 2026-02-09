@@ -9,28 +9,24 @@ void TicTacToe::CheckWinner() {
   // rows and cols
   for (int i = 0; i < 3; i++) {
     // rows
-    if ((board[i * 3] == board[i * 3 + 1]) &&
-        (board[i * 3 + 1] == board[i * 3 + 2]) && board[i * 3] != 0 &&
-        board[i * 3] != 2) {
+    if (AreElementsAtIndicesEqual(i * 3, i * 3 + 1, i * 3 + 2) &&
+        board[i * 3] != 0) {
       winner = board[i * 3];
       return;
     }
     // cols
-    if ((board[i] == board[3 + i]) && (board[3 + i] == board[6 + i]) &&
-        board[i] != 0 && board[i] != 2) {
+    if (AreElementsAtIndicesEqual(i, i + 3, i + 6) && board[i] != 0) {
       winner = board[i];
       return;
     }
   }
 
   // diagonals
-  if ((board[0] == board[4]) && (board[4] == board[8]) && board[4] != 0 &&
-      board[4] != 2) {
-    winner = board[0];
+  if (AreElementsAtIndicesEqual(0, 4, 8) && board[4] != 0) {
+    winner = board[4];
     return;
-  } else if ((board[2] == board[4]) && (board[4] == board[6]) &&
-             board[4] != 0 && board[4] != 2) {
-    winner = board[2];
+  } else if (AreElementsAtIndicesEqual(2, 4, 6) && board[4] != 0) {
+    winner = board[4];
     return;
   }
 
@@ -40,5 +36,11 @@ void TicTacToe::CheckWinner() {
 bool TicTacToe::IsMoveLeft() {
   for (int &v : board)
     if (v == 0) return true;
+  return false;
+}
+
+// Checks if elements at the given indices are equal
+bool TicTacToe::AreElementsAtIndicesEqual(int i, int j, int k) {
+  if (board[i] == board[j] && board[j] == board[k]) return true;
   return false;
 }

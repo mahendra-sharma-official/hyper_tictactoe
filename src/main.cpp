@@ -2,15 +2,12 @@
 
 #include <iostream>
 
-#include "autoplay.hpp"
-#include "game_gui.hpp"
-#include "minimax.hpp"
+#include "autoplay/autoplay.hpp"
+#include "core/game.hpp"
+#include "gui/game_gui.hpp"
+#include "solver/minimax.hpp"
 
 int main() {
-  // Hide the console
-  //FreeConsole();
-  ShowWindow(GetConsoleWindow(), SW_HIDE);
-  
   // create the window
   sf::RenderWindow window(sf::VideoMode({800, 600}), "Hyper TicTacToe");
   window.setFramerateLimit(60);
@@ -25,7 +22,7 @@ int main() {
   // Game Initialization
   Game game;
   game.Init();
-  game.solverDepth = 4;
+  game.solverDepth = 3;
   bool autoplay = false;
 
   // Gui Initialization
@@ -61,7 +58,7 @@ int main() {
     // Logic
     if (game.running) {
       if (game.winner == 0 && autoplay == true) {
-        AutoPlay(game, gui, false, false);
+        AutoPlay(game, gui, true, true);
       }
     }
     // Background

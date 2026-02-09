@@ -1,5 +1,7 @@
 #include "gui/game_gui.hpp"
 
+#include <iostream>
+
 #include "gui/gui_helpers.hpp"
 
 Game_Gui::Game_Gui(Game &g, RenderWindow &w)
@@ -313,6 +315,8 @@ void Game_Gui::ClickHandle(const Event::MouseButtonReleased *clicked) {
 
 void Game_Gui::UpdateGuiOnClick(int i, int j, int &prevPlayableIndex) {
   // Highlight playable miniboard
+
+  
   if (game.playableIndex != -1) {
     if (prevPlayableIndex != -1)
       bigBoardContainerM[prevPlayableIndex].setFillColor(Color::Transparent);
@@ -339,9 +343,8 @@ void Game_Gui::UpdateGuiOnClick(int i, int j, int &prevPlayableIndex) {
   playerTurnText.setString(trntxt);
 
   if (game.winner != 0) {
-    string result = game.gameBoard.winners[i] == 1
-                        ? "X"
-                        : (game.gameBoard.winners[i] == -1 ? "O" : "Draw");
+    string result = game.winner == 1
+                        ? "X" : (game.winner == -1 ? "O" : "Draw");
     string wnrTxt = "Winner : " + result;
     winnerText.setString(wnrTxt);
   }
