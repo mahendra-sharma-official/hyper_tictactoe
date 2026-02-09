@@ -5,16 +5,16 @@
 Minimax_Solver::Minimax_Solver() : maxDepth(1), playedTotalTurns(0) {}
 static float WIN_SCORE = 100000.f;
 static float LOSS_SCORE = -100000.f;
-static float DRAW_SCORE = 0.f;
+static float DRAW_SCORE = -5.f;
 
 static float EvaluateLine(int a, int b, int c, int rootPlayer) {
   int sum = a + b + c;
   int empty = (a == 0) + (b == 0) + (c == 0);
 
-  if (empty != 1) return 0.f;
+  if (empty == 2) return +5.f;
 
-  if (sum == 2 * rootPlayer) return +10.f;
-  if (sum == -2 * rootPlayer) return -12.f;
+  if (sum == 2 * rootPlayer) return +15.f;
+  if (sum == -2 * rootPlayer) return -18.f;
 
   return 0.f;
 }
@@ -36,16 +36,21 @@ static float EvaluateSmallBoard(const vector<int> &board, int rootPlayer) {
 float Minimax_Solver::EvaluateBigBoard(BigBoard &big, int rootPlayer) {
   float score = 0.f;
 
+  // Try to win in winnable order in big board pattern as well
+  // more valuable than winning in small board
+  score += EvaluateSmallBoard(big.winners, rootPlayer) * 3.f;
+
   for (int i = 0; i < 9; i++) {
     int w = big.winners[i];
 
     if (w == rootPlayer)
-      score += 50.f;
+      score += 100.f;
     else if (w == -rootPlayer)
-      score -= 50.f;
+      score -= 120.f;
     else if (w == 0)
-      score += EvaluateSmallBoard(big.miniBoards[i].board, rootPlayer);
-    // draw boards (w == 2) contribute nothing
+      score += EvaluateSmallBoard(big.miniBoards[i].board, rootPlayer) * 1.f;
+    else if (w == 2)
+      score += -25.f;
   }
 
   return score;
@@ -82,60 +87,10 @@ vector<Index> Minimax_Solver::GetAvailableMoves(BigBoard &big,
 
   return moves;
 }
-/*
-float Minimax_Solver::Minimax(BigBoard &big_board, int depth, bool isMaximizing,
-int playableIndex, int curr_player, int count_totalTurns)
-{
-    big_board.CheckBoardWinners();
-    if (big_board.IsMoveLeft() == false || depth == 0)
-        return EvaluateBigBoard(big_board, curr_player) * (1.f + depth * 2.f);
-
-    float bestScore = isMaximizing ? -100000 : 100000;
-    vector<Index> moves;
-    GetAvailableMoves(big_board, playableIndex, moves, count_totalTurns +
-(maxDepth - depth));
-
-    for (auto &m : moves)
-    {
-        // Make move
-        big_board.miniBoards[m.i].board[m.j] = isMaximizing ? curr_player :
--curr_player; big_board.miniBoards[m.i].CheckWinner();
-
-        int nextPlayableIndex = m.j; // next board index is where current player
-played
-
-        // Determine next playable board in case of nonplayable board
-        if (big_board.miniBoards[nextPlayableIndex].winner != 0)
-            nextPlayableIndex = -1;
-
-        float score = Minimax(big_board, depth - 1, !isMaximizing,
-nextPlayableIndex, curr_player, count_totalTurns + 1);
-
-        // Undo move
-        big_board.miniBoards[m.i].board[m.j] = 0;
-
-        // reseting the winner in case it had won (otherwise checkwinner will
-not update properly) big_board.winners[m.i] = 0;
-        big_board.miniBoards[m.i].winner = 0;
-        big_board.miniBoards[m.i].CheckWinner();
-
-        big_board.CheckBoardWinners(); // REQUIRED
-
-        // big_board.miniBoards[m.i].CheckWinner();
-
-        if (isMaximizing)
-            bestScore = max(bestScore, score);
-        else
-            bestScore = min(bestScore, score);
-    }
-    return bestScore;
-}
-
-*/
 
 float Minimax_Solver::Minimax(BigBoard &big, int depth, bool isMaximizing,
                               int playableIndex, int rootPlayer, int turnPlayer,
-                              int count_totalTurns) {
+                              float alpha, float beta, int count_totalTurns) {
   big.CheckBoardWinners();
   int winner = big.GetWinner();
 
@@ -152,26 +107,28 @@ float Minimax_Solver::Minimax(BigBoard &big, int depth, bool isMaximizing,
   for (auto &m : moves) {
     // make move
     big.miniBoards[m.i].board[m.j] = turnPlayer;
-    big.miniBoards[m.i].CheckWinner();
-    big.CheckBoardWinners();
 
     int nextPlayable = m.j;
     if (big.miniBoards[nextPlayable].winner != 0) nextPlayable = -1;
 
-    float score = Minimax(big, depth - 1, !isMaximizing, nextPlayable,
-                          rootPlayer, -turnPlayer, count_totalTurns + 1);
+    float score =
+        Minimax(big, depth - 1, !isMaximizing, nextPlayable, rootPlayer,
+                -turnPlayer, alpha, beta, count_totalTurns + 1);
 
     // undo move
     big.miniBoards[m.i].board[m.j] = 0;
     big.miniBoards[m.i].winner = 0;
     big.winners[m.i] = 0;
-    big.miniBoards[m.i].CheckWinner();
-    big.CheckBoardWinners();
 
-    if (isMaximizing)
+    if (isMaximizing) {
       best = max(best, score);
-    else
+      alpha = max(alpha, best);
+      if (alpha <= beta) break;
+    } else {
       best = min(best, score);
+      beta = min(beta, best);
+      if (beta <= alpha) break;
+    }
   }
 
   return best;
@@ -194,7 +151,7 @@ Index Minimax_Solver::FindBestMove(BigBoard &big, int playableIndex,
     float score = Minimax(big, depth - 1, false, mv.j,
                           currPlayer,   // root
                           -currPlayer,  // opponent
-                          count_totalTurns + 1);
+                          -1e9f, 1e9f, count_totalTurns + 1);
 
     // undo
     big.miniBoards[mv.i].board[mv.j] = 0;

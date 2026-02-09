@@ -14,6 +14,7 @@ class Game {
 
   // Solver Related
   Minimax_Solver solver;
+  bool toggleAutoplay;
   bool toggleSolveO;
   bool toggleSolveX;
   Index bestMoveX;

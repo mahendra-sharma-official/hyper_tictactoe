@@ -41,14 +41,16 @@ class Game_Gui {
   int hud_width;
   RectangleShape upperHudContainer;
   RectangleShape lowerHudContainer;
-  Text playerTurnText;           // Shown in upper hud
-  Text restartText;              // Shown in upper hud
-  Text solveXText;               // Shown in lower hud
-  Text solveOText;               // Shown in lower hud
-  Text winnerText;               // Shown in lower hud
-  RectangleShape restartButton;  // Shown in upper hud
-  RectangleShape solveXButton;   // Shown in lower hud
-  RectangleShape solveOButton;   // Shown in upper hud
+  Text playerTurnText;            // Shown in upper hud
+  Text restartText;               // Shown in upper hud
+  Text autoplayText;              // Shown in lower hud
+  Text solveXText;                // Shown in lower hud
+  Text solveOText;                // Shown in lower hud
+  Text winnerText;                // Shown in lower hud
+  RectangleShape restartButton;   // Shown in upper hud
+  RectangleShape autoplayButton;  // Shown in lower hud
+  RectangleShape solveXButton;    // Shown in lower hud
+  RectangleShape solveOButton;    // Shown in upper hud
 
   Game_Gui(Game &g, RenderWindow &w);
 

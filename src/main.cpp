@@ -22,8 +22,7 @@ int main() {
   // Game Initialization
   Game game;
   game.Init();
-  game.solverDepth = 3;
-  bool autoplay = false;
+  game.solverDepth = 5;
 
   // Gui Initialization
   Game_Gui gui(game, window);
@@ -32,6 +31,8 @@ int main() {
   int thickness = 2;
 
   gui.Init(margins, thickness, hud_width);
+
+  int prevTurn = -1;
 
   while (window.isOpen()) {
     while (const std::optional event = window.pollEvent()) {
@@ -57,8 +58,11 @@ int main() {
 
     // Logic
     if (game.running) {
-      if (game.winner == 0 && autoplay == true) {
-        AutoPlay(game, gui, true, true);
+      if (game.winner == 0 && game.toggleAutoplay == true) {
+        if (prevTurn != game.currentTurn) {
+          prevTurn = game.currentTurn;
+          AutoPlay(game, gui, game.toggleSolveX, game.toggleSolveO);
+        }
       }
     }
     // Background

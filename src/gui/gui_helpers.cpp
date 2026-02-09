@@ -103,10 +103,22 @@ void SetHudGui(Game_Gui &gui, float hud_width, float hud_font_size) {
       {(float)gui.mainContainerSize, hud_width});
   gui.lowerHudContainer.setFillColor(gui.backgroundColor);
 
+  // Toggle Autoplay button with text
+  SetSingleTextGui(gui.autoplayText, "Autoplay",
+                   {gui.offset.x + gui.mainContainerSize * 0.25f,
+                    gui.offset.y + gui.mainContainerSize + hud_width * 0.55f},
+                   hud_font_size, Color::White);
+  SetSingleRectGui(
+      gui.autoplayButton,
+      gui.autoplayText.getPosition() - Vector2f(hud_font_size / 4.f, 0.f),
+      gui.autoplayText.getLocalBounds().size +
+          Vector2f(hud_font_size / 2.f, hud_font_size * 0.5f),
+      0, gui.autoplayText.getOrigin(), Color(130, 130, 130, 130));
+
   // winner text
   string wnrTxt = "Winner : " + string(gui.game.winner == 1 ? "X" : "O");
   SetSingleTextGui(gui.winnerText, wnrTxt,
-                   {gui.offset.x + gui.mainContainerSize * 0.5f,
-                    gui.offset.y + gui.mainContainerSize + hud_width / 2.f},
+                   {gui.offset.x + gui.mainContainerSize * 0.75f,
+                    gui.offset.y + gui.mainContainerSize + hud_width * 0.5f},
                    hud_font_size, Color::White);
 }
